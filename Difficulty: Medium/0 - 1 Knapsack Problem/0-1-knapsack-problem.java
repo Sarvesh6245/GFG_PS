@@ -1,77 +1,75 @@
 //{ Driver Code Starts
-import java.util.*;
 import java.io.*;
-import java.lang.*;
+import java.util.*;
 
-class gfg
-{
-    public static void main(String args[])throws IOException
-    {
-        //reading input using BufferedReader class
-        BufferedReader read = new BufferedReader(new InputStreamReader(System.in));
-        
-        //reading total testcases
-        int t = Integer.parseInt(read.readLine());
-        
-        while(t-- > 0)
-        {
-            //reading number of elements and weight
-            int n = Integer.parseInt(read.readLine());
-            int w = Integer.parseInt(read.readLine());
-            
-            int val[] = new int[n];
-            int wt[] = new int[n];
-            
-            String st[] = read.readLine().trim().split("\\s+");
-            
-            //inserting the values
-            for(int i = 0; i < n; i++)
-              val[i] = Integer.parseInt(st[i]);
-             
-            String s[] = read.readLine().trim().split("\\s+"); 
-            
-            //inserting the weigths
-            for(int i = 0; i < n; i++)
-              wt[i] = Integer.parseInt(s[i]);
-              
-            //calling method knapSack() of class Knapsack
-            System.out.println(new Solution().knapSack(w, wt, val, n));
+class gfg {
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int t = Integer.parseInt(br.readLine());
+
+        while (t-- > 0) {
+            int w = Integer.parseInt(br.readLine());
+
+            String line = br.readLine();
+            String[] tokens = line.split(" ");
+            List<Integer> array = new ArrayList<>();
+
+            // Parse the tokens into integers and add to the array
+            for (String token : tokens) {
+                array.add(Integer.parseInt(token));
+            }
+
+            int[] val = new int[array.size()];
+            int idx = 0;
+            for (int i : array) val[idx++] = i;
+
+            String lin = br.readLine();
+            String[] toke = lin.split(" ");
+            List<Integer> array1 = new ArrayList<>();
+
+            // Parse the tokens into integers and add to the array
+            for (String token : toke) {
+                array1.add(Integer.parseInt(token));
+            }
+
+            int[] wt = new int[array1.size()];
+            idx = 0;
+            for (int i : array1) wt[idx++] = i;
+
+            // calling method knapSack() of class Solution
+            System.out.println(new Solution().knapSack(w, wt, val));
         }
     }
 }
-
-
-
-
 // } Driver Code Ends
 
 
-class Solution 
-{ 
-    //Function to return max value that can be put in knapsack of capacity W.
-    static int knapSack(int W, int wt[], int val[], int n) 
-    { 
-        int[][] dp = new int[n][W+1];
+class Solution {
+    // Function to return max value that can be put in knapsack of capacity W.
+    static int knapSack(int W, int wt[], int val[]) {
+        int n = val.length;
         
-        for(int[] rows: dp)
-        {
-            Arrays.fill(rows, -1);
+        // Create a 2D DP array
+        int[][] dp = new int[n + 1][W + 1];
+
+        // Iterate over all items
+        for (int i = 0; i <= n; i++) {
+            // Iterate over all possible capacities
+            for (int w = 0; w <= W; w++) {
+                if (i == 0 || w == 0) {
+                    // Base case: If no items or no capacity, the value is 0
+                    dp[i][w] = 0;
+                } else if (wt[i - 1] <= w) {
+                    // If the weight of the current item is less than or equal to the current capacity
+                    dp[i][w] = Math.max(val[i - 1] + dp[i - 1][w - wt[i - 1]], dp[i - 1][w]);
+                } else {
+                    // If the weight of the current item is more than the current capacity, skip it
+                    dp[i][w] = dp[i - 1][w];
+                }
+            }
         }
-        
-        return knap(0, W, wt, val, n, dp);
-    } 
-    
-    static int knap(int i, int W, int[] wt, int[] val, int n, int[][] dp)
-    {
-        if(i>=n || W<=0) return 0;
-        if(dp[i][W]!=-1) return dp[i][W];
-        
-        int nottake = knap(i+1, W, wt, val, n, dp);
-        
-        int take = 0;
-        if(W-wt[i]>=0)
-            take = val[i]+knap(i+1, W-wt[i], wt, val, n, dp);
-        
-        return dp[i][W] = Math.max(take, nottake);
+
+        // Return the maximum value that can be obtained
+        return dp[n][W];
     }
 }
