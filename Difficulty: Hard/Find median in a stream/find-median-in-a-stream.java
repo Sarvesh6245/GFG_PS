@@ -1,75 +1,69 @@
 //{ Driver Code Starts
-import java.util.*;
 import java.io.*;
-import java.lang.*;
+import java.util.*;
 
-
-class GFG
-{
-    public static void main (String[] args) {
+public class Main {
+    public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         int t = sc.nextInt();
-        
-        int n;
-        while(t-- > 0){
-            n = sc.nextInt();
-    
-            Solution obj = new Solution();
-            for(int i = 1; i <= n; i++)
-            {
-                int x =sc.nextInt();
-                obj.insertHeap(x);
-                System.out.println((int)Math.floor(obj.getMedian()));
+        sc.nextLine(); // Consume the newline character
+
+        while (t-- > 0) {
+            String s = sc.nextLine();
+            String[] parts = s.split(" ");
+            int[] nums = new int[parts.length];
+            for (int i = 0; i < parts.length; i++) {
+                nums[i] = Integer.parseInt(parts[i]);
             }
-        
-System.out.println("~");
-}
-        
-        
+            Solution ob = new Solution();
+            ArrayList<Double> ans = ob.getMedian(nums);
+            for (double i : ans) {
+                System.out.printf("%.1f ", i);
+            }
+            System.out.println();
+            System.out.println("~");
+        }
+        sc.close();
     }
 }
-
 
 // } Driver Code Ends
 
 
-class Solution{
-    
-    static PriorityQueue<Integer> left=new PriorityQueue<>(Collections.reverseOrder());
-    static PriorityQueue<Integer> right=new PriorityQueue<>();
-    
-    public static void insertHeap(int x){
-        if(left.size()==0){
-            left.add(x);
+class Solution {
+    private void insertIntoHeaps(int num, PriorityQueue <Integer> min, PriorityQueue <Integer> max){
+        if (max.isEmpty() || num <= max.peek()){
+            max.add(num);
+        }else{
+            min.add(num);
         }
-        else if(left.size()>right.size()){
-            right.add(x);
-            balanceHeaps();
-        }
-        else{
-            left.add(x);
-            balanceHeaps();
-        }
-    }
-    public static void balanceHeaps(){
-        if(left.peek()>right.peek()){
-            int temp1=left.poll();
-            int temp2=right.poll();
-            left.add(temp2);
-            right.add(temp1);
+        
+        if (max.size() > min.size() + 1){
+            min.add(max.poll());
+        }else if (max.size() < min.size()){
+            max.add(min.poll());
         }
     }
     
-    //Function to return Median.
-    public static double getMedian(){
-        if(left.size()>right.size()){
-            return (double)left.peek();
+    public ArrayList<Double> getMedian(int[] arr) {
+        PriorityQueue <Integer> min = new PriorityQueue<>();
+        PriorityQueue <Integer> max = new PriorityQueue<>(Collections.reverseOrder());
+        
+        ArrayList<Double> ans = new ArrayList<>();
+        
+        for (int it: arr){
+            insertIntoHeaps(it, min, max);
+            
+            double mid;
+            if (min.size() == max.size()){
+                mid = (min.peek() + max.peek()) / 2.0;
+            }else{
+                mid = max.peek();
+            }
+            
+            ans.add(mid);
         }
-        else{
-            int x=left.peek();
-            int y=right.peek();
-            double res=(x+y)/2;
-            return res;
-        }
+        
+        return ans;
     }
 }
