@@ -1,52 +1,61 @@
 //{ Driver Code Starts
-// Initial Template for Java
-
 import java.io.*;
 import java.util.*;
 
-class GFG {
-    public static void main(String args[]) throws IOException {
-        BufferedReader in =
-            new BufferedReader(new InputStreamReader(System.in));
-        int t = Integer.parseInt(in.readLine());
-        while (t-- > 0) {
-            int K = Integer.parseInt(in.readLine());
-            int N = Integer.parseInt(in.readLine());
-            String input_line[] = in.readLine().trim().split("\\s+");
-            int A[] = new int[N];
-            for (int i = 0; i < N; i++) A[i] = Integer.parseInt(input_line[i]);
+public class Main {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int tc = Integer.parseInt(br.readLine());
 
-            Solution ob = new Solution();
-            System.out.println(ob.maxProfit(K, N, A));
-        
-System.out.println("~");
-}
+        for (int t = 0; t < tc; t++) {
+            String[] input = br.readLine().split(" ");
+            int arr[] = new int[input.length];
+
+            for (int i = 0; i < arr.length; i++) arr[i] = Integer.parseInt(input[i]);
+
+            // Read the integer k
+            int k = Integer.parseInt(br.readLine());
+
+            // Call the solution function
+            Solution obj = new Solution();
+            System.out.println(obj.maxProfit(arr, k));
+            System.out.println("~");
+        }
     }
 }
-
 // } Driver Code Ends
 
 
-// User function Template for Java
-
 class Solution {
-    static int maxProfit(int K, int N, int A[]) {
-        if (K == 0 || N < 2) {
+    static int maxProfit(int prices[], int k) {
+        if (prices == null || prices.length == 0 || k == 0) {
             return 0;
         }
+
+        int n = prices.length;
+
         
-        int[][] dp = new int[K + 1][N];
-        
-        for (int i = 1; i <= K; i++) {
-            int maxDiff = -A[0];
-            
-            for (int j = 1; j < N; j++) {
-                dp[i][j] = Math.max(dp[i][j-1], A[j] + maxDiff);
-                
-                maxDiff = Math.max(maxDiff, dp[i-1][j] - A[j]);
+        if (k >= n / 2) {
+            int maxProfit = 0;
+            for (int i = 1; i < n; i++) {
+                if (prices[i] > prices[i - 1]) {
+                    maxProfit += prices[i] - prices[i - 1];
+                }
+            }
+            return maxProfit;
+        }
+
+
+        int[][] dp = new int[k + 1][n];
+
+        for (int i = 1; i <= k; i++) {
+            int maxDiff = -prices[0]; 
+            for (int j = 1; j < n; j++) {
+                dp[i][j] = Math.max(dp[i][j - 1], prices[j] + maxDiff);
+                maxDiff = Math.max(maxDiff, dp[i - 1][j] - prices[j]);
             }
         }
-        
-        return dp[K][N-1];
+
+        return dp[k][n - 1];
     }
 }
